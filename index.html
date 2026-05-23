@@ -2,608 +2,370 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Race Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Trail Anadia – Race Day</title>
 <style>
-:root{--ink:#0f0f0d;--paper:#f5f3ee;--warm:#e8e4db;--accent:#c17f3b;--accent-lt:#f5ead8;--green:#3B6D11;--gold:#C08010;--blue:#185FA5;--muted:#888;--r:10px;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
-
-/* HEADER */
-.header{background:var(--ink);color:#f5f3ee;padding:2rem 2rem 1.5rem;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
-.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:.4rem;}
-.ht{font-family:'DM Serif Display',serif;font-size:clamp(26px,4vw,42px);line-height:1.1;}
-.ht em{font-style:italic;color:var(--accent);}
-.hstats{display:flex;gap:1.5rem;flex-wrap:wrap;}
-.hstat-val{font-family:'DM Mono',monospace;font-size:20px;}
-.hstat-lbl{font-size:11px;color:#888;margin-top:2px;}
-
-/* TOOLBAR */
-.toolbar{padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-bottom:1px solid var(--warm);}
-.filters{display:flex;gap:6px;}
-.filter{padding:5px 12px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit;}
-.filter.active{background:var(--ink);color:#f5f3ee;border-color:var(--ink);}
-.add-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:8px;background:var(--accent);color:#fff;border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:opacity .15s;}
-.add-btn:hover{opacity:.85;}
-
-/* GRID */
-.grid{padding:1.5rem 2rem 3rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.25rem;}
-
-/* RACE CARD */
-.card{background:#fff;border:1px solid var(--warm);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .15s;}
-.card:hover{box-shadow:0 6px 24px rgba(0,0,0,.1);transform:translateY(-2px);}
-.card-header{padding:1.1rem 1.25rem .9rem;}
-.card-status{display:inline-flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;padding:3px 8px;border-radius:4px;margin-bottom:.6rem;}
-.st-up{background:#FFF3CD;color:#6B4200;}
-.st-done{background:#EAF3DE;color:#27500A;}
-.st-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.st-up .st-dot{background:#C08010;}
-.st-done .st-dot{background:#3B6D11;}
-.card-name{font-family:'DM Serif Display',serif;font-size:20px;line-height:1.2;margin-bottom:.3rem;}
-.card-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
-.card-meta{display:flex;gap:1rem;padding:.7rem 1.25rem;background:var(--paper);border-top:1px solid var(--warm);border-bottom:1px solid var(--warm);}
-.cm-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;}
-.cm-lbl{font-size:10px;color:var(--muted);margin-top:1px;}
-.card-goals{padding:.8rem 1.25rem .9rem;display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-.gpill{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;font-size:11px;font-weight:500;}
-.gp-ap{background:#FAEEDA;color:#633806;}
-.gp-a{background:#EAF3DE;color:#27500A;}
-.gp-b{background:#E6F1FB;color:#0C447C;}
-.card-cta{padding:.6rem 1.25rem .9rem;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;}
-
-/* PLACEHOLDER */
-.card-placeholder{background:#fff;border:2px dashed #ddd;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem;gap:.75rem;cursor:pointer;transition:all .2s;min-height:200px;}
-.card-placeholder:hover{border-color:var(--accent);background:var(--accent-lt);}
-.ph-icon{width:40px;height:40px;border-radius:50%;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:20px;}
-.ph-text{font-size:14px;color:var(--muted);}
-.ph-sub{font-size:12px;color:#bbb;text-align:center;}
-
-/* ===== OVERLAY ===== */
-.overlay{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;background:var(--paper);}
-.overlay.open{display:flex;}
-.overlay-bar{background:var(--ink);color:#f5f3ee;padding:.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:1rem;}
-.overlay-race{font-family:'DM Serif Display',serif;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.overlay-meta{font-family:'DM Mono',monospace;font-size:11px;color:#888;margin-top:2px;}
-.overlay-close{background:none;border:1px solid #555;color:#f5f3ee;border-radius:7px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;}
-.overlay-close:hover{background:#333;border-color:#333;}
-.overlay-body{flex:1;overflow-y:auto;padding:1.25rem 1.25rem 2rem;}
-
-/* INNER TABS */
-.o-mode{display:flex;gap:6px;margin-bottom:1rem;}
-.o-mode-btn{padding:5px 13px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s;}
-.o-mode-btn.active{background:var(--ink);color:#f5f3ee;border-color:var(--ink);}
-.o-tabs{display:flex;gap:7px;margin-bottom:1.25rem;flex-wrap:wrap;}
-.o-tab{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:13px;color:#555;cursor:pointer;transition:all .15s;font-family:inherit;}
-.o-tab.active{font-weight:500;color:var(--ink);background:#f0efe9;border-color:#aaa;}
-.o-dot{width:8px;height:8px;border-radius:50%;}
-.o-goal{display:none;}
-.o-goal.active{display:block;}
-
-/* WEATHER STRIP */
-.w-strip{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.1rem;}
-.w-cell{background:#fff;border:1px solid var(--warm);border-radius:8px;padding:.5rem .8rem;font-size:11px;color:#444;min-width:90px;}
-.w-cell b{font-weight:500;color:var(--ink);font-size:12px;display:block;margin-top:2px;}
-.w-lbl{font-size:10px;color:#999;}
-
-/* HYDRATION BOX */
-.hbox{background:#fff;border:1px solid var(--warm);border-left:3px solid var(--blue);border-radius:8px;padding:.85rem 1rem;margin-bottom:1.1rem;font-size:12px;line-height:1.75;color:#444;}
-.hbox b{font-weight:500;color:var(--ink);}
-.hbox-title{font-size:12px;font-weight:500;color:var(--blue);margin-bottom:.5rem;}
-.ibox{background:#EAF3DE;border:1px solid #7dba5a;border-radius:7px;padding:.65rem .9rem;margin-top:.7rem;font-size:11.5px;color:#1a3d08;line-height:1.6;}
-
-/* ZONE LEGEND */
-.zlegend{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
-.zp{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
-.zp1{background:#E6F1FB;color:#0C447C;}
-.zp2{background:#EAF3DE;color:#27500A;}
-.zp3{background:#FFF3CD;color:#6B4200;}
-.zp4{background:#FAEADA;color:#7A1E00;}
-.zp-lbl{opacity:.65;font-weight:400;}
-.znote{font-size:11px;color:var(--green);font-weight:500;margin-left:3px;}
-
-/* FULL GUIDE TABLE */
-.o-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.1rem;}
-.os-card{background:#fff;border:1px solid var(--warm);border-radius:8px;padding:.65rem .9rem;}
-.os-lbl{font-size:11px;color:#888;margin-bottom:3px;}
-.os-val{font-size:16px;font-weight:500;}
-.tbl-wrap{overflow-x:auto;border:1px solid var(--warm);border-radius:9px;margin-bottom:.7rem;}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:700px;}
-thead tr{background:#f5f4f0;}
-th{padding:8px 9px;text-align:left;font-size:11px;font-weight:500;color:#777;border-bottom:1px solid var(--warm);white-space:nowrap;}
-td{padding:9px 9px;border-bottom:1px solid var(--warm);vertical-align:top;}
-tr.nr td{padding:3px 9px 10px;font-size:11px;color:#555;line-height:1.55;border-bottom:1.5px solid #e0dfd8;}
-tr:last-child td,tr:nth-last-child(2) td{border-bottom:none;}
-tr:nth-last-child(2).nr td{border-bottom:none;}
-.cp-n{font-weight:500;font-size:12.5px;display:block;margin-bottom:3px;}
-.badge{display:inline-block;padding:2px 6px;border-radius:20px;font-size:10px;font-weight:500;margin-bottom:2px;}
-.b-up{background:#FAEEDA;color:#633806;}
-.b-mx{background:#F3E8FB;color:#4B0880;}
-.b-ro{background:#EAF3DE;color:#27500A;}
-.em{font-size:11px;color:#999;margin-top:1px;}
-.tmeta{font-size:10px;color:var(--green);font-weight:500;margin-top:2px;}
-.ct{font-weight:500;font-size:13px;display:block;}
-.cp{font-size:11px;color:#888;margin-top:1px;}
-.hr-z{font-weight:500;font-size:11.5px;display:block;}
-.hr-b{font-size:11.5px;font-weight:500;display:block;margin-top:2px;}
-.hr-s{font-size:10px;color:#888;display:block;margin-top:2px;line-height:1.4;}
-.z1c{color:#0C447C;}
-.z2c{color:#3B6D11;}
-.z3c{color:#6B4200;}
-.z4c{color:#7A1E00;}
-.ni{font-size:11.5px;display:block;line-height:1.55;}
-.ni .q{font-weight:500;}
-.ni .p{color:#666;font-size:10.5px;}
-.rfb{display:inline-block;background:#E6F1FB;color:#0C447C;font-size:10px;font-weight:500;padding:1px 5px;border-radius:4px;margin-top:2px;}
-.tot{display:flex;gap:10px;flex-wrap:wrap;background:#f5f4f0;border-radius:7px;padding:.55rem .85rem;margin-bottom:.7rem;}
-.ti{font-size:11.5px;color:#444;}
-.ti b{font-weight:500;color:var(--ink);}
-
-/* ===== RACE-DAY VIEW ===== */
-.rv-wrap{max-width:480px;margin:0 auto;}
-.rv-nutr{background:#f5f3ee;border-radius:8px;padding:.65rem .85rem;font-size:11.5px;color:#555;line-height:1.7;margin-bottom:.85rem;}
-.rv-nutr b{font-weight:500;color:var(--ink);}
-.rv-cp{background:#fff;border:1px solid var(--warm);border-radius:9px;margin-bottom:.7rem;overflow:hidden;}
-.rv-cp.rv-cur{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-lt);}
-.rv-cp.rv-done{opacity:.4;}
-.rv-top{display:grid;grid-template-columns:1fr auto auto;gap:.85rem;align-items:center;padding:.85rem .95rem .7rem;}
-.rv-km{font-size:10.5px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;}
-.rv-name{font-size:13.5px;font-weight:500;margin-top:2px;}
-.rv-tmp{font-size:10px;color:var(--green);font-weight:500;margin-top:3px;}
-.rv-stat{text-align:right;}
-.rv-val{font-size:21px;font-weight:500;line-height:1;font-family:'DM Mono',monospace;}
-.rv-lbl{font-size:10px;color:var(--muted);margin-top:3px;}
-.rv-note{padding:.5rem .95rem .75rem;font-size:12.5px;color:#444;line-height:1.55;border-top:1px solid #f0efe9;}
-.rv-note b{font-weight:500;color:var(--ink);}
-.rv-act{display:flex;justify-content:flex-end;padding:.4rem .8rem;border-top:1px solid #f0efe9;background:#fafaf8;}
-.mk{padding:3px 11px;border-radius:20px;font-size:11px;cursor:pointer;border:1px solid #ddd;background:#fff;font-family:inherit;color:#666;transition:all .15s;}
-.mk.marked{background:#EAF3DE;color:var(--green);border-color:#b3d98f;}
-.rv-temp-bar{display:flex;border-radius:7px;overflow:hidden;border:1px solid var(--warm);margin-bottom:.85rem;}
-.rv-tc{flex:1;padding:.4rem .4rem;text-align:center;font-size:10px;background:#fff;}
-.rv-tc:not(:last-child){border-right:1px solid var(--warm);}
-.rv-tt{color:#999;margin-bottom:1px;font-size:9px;}
-.rv-tp{font-weight:500;color:var(--green);}
-
-/* ===== ADD MODAL ===== */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;display:none;align-items:center;justify-content:center;padding:1rem;}
-.modal-bg.open{display:flex;}
-.modal{background:#fff;border-radius:var(--r);padding:1.5rem;width:100%;max-width:460px;max-height:92vh;overflow-y:auto;}
-.modal h3{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:1rem;}
-.modal label{display:block;font-size:12px;font-weight:500;margin-bottom:4px;margin-top:.8rem;color:var(--ink);}
-.modal label.first{margin-top:0;}
-.modal input,.modal select,.modal textarea{width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:7px;font-size:13px;font-family:inherit;color:var(--ink);}
-.modal textarea{resize:vertical;min-height:60px;}
-.file-zone{border:2px dashed #ddd;border-radius:8px;padding:1rem;text-align:center;cursor:pointer;transition:all .15s;position:relative;background:#fafaf8;}
-.file-zone:hover{border-color:var(--accent);background:var(--accent-lt);}
-.file-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.file-zone-lbl{font-size:12px;color:var(--muted);}
-.file-zone-sub{font-size:11px;color:#bbb;margin-top:3px;}
-.file-preview{width:100%;border-radius:6px;margin-top:.6rem;max-height:120px;object-fit:cover;display:none;}
-.modal-note{font-size:11px;color:#888;line-height:1.6;margin-top:.5rem;padding:.5rem .7rem;background:#f5f3ee;border-radius:6px;}
-.modal-btns{display:flex;gap:8px;margin-top:1.25rem;}
-.modal-btns button{flex:1;padding:9px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;border:none;transition:opacity .15s;}
-.modal-save{background:var(--ink);color:#fff;}
-.modal-cancel{background:var(--warm);color:var(--ink);}
-.section-divider{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#aaa;margin:.9rem 0 .4rem;padding-bottom:.3rem;border-bottom:1px solid var(--warm);}
-
-@media(max-width:600px){
-  .header{padding:1.25rem 1rem 1rem;}
-  .grid{padding:1rem;gap:1rem;}
-  .toolbar{padding:.75rem 1rem;}
-  .hstats{display:none;}
-  .o-summary{grid-template-columns:repeat(2,1fr);}
-  .rv-val{font-size:18px;}
-  table{min-width:580px;}
+:root{
+  --ink:#111;--muted:#777;--border:#e8e8e8;--bg:#f4f3f0;--card:#fff;
+  --ap:#B87317;--a:#2d6a0a;--b:#185FA5;
+  --red:#c0392b;--green:#27ae60;
 }
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);font-size:15px;-webkit-tap-highlight-color:transparent;}
+
+/* ── HEADER ── */
+.header{background:#111;color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.h-eyebrow{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.04em;margin-bottom:3px;}
+.h-title{font-size:17px;font-weight:700;margin-bottom:10px;}
+.goal-tabs{display:flex;gap:7px;}
+.gtab{
+  flex:1;padding:9px 6px 8px;border-radius:9px;
+  border:1.5px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.55);
+  font-size:14px;font-weight:600;cursor:pointer;
+  font-family:inherit;text-align:center;line-height:1;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.gtab small{display:block;font-size:11px;font-weight:400;margin-top:3px;opacity:.85;}
+.gtab.active.g-ap{border-color:#e8a230;color:#f5c06a;background:rgba(184,115,23,.2);}
+.gtab.active.g-a{border-color:#7dba5a;color:#a0d47a;background:rgba(45,106,10,.18);}
+.gtab.active.g-b{border-color:#6fa8dc;color:#90c0f0;background:rgba(24,95,165,.2);}
+
+/* ── BODY ── */
+.body{padding:12px 12px 40px;}
+
+/* ── CHECKPOINT CARD ── */
+.cp-card{
+  background:var(--card);border-radius:14px;
+  border:1.5px solid var(--border);
+  margin-bottom:14px;overflow:hidden;
+  transition:opacity .25s;
+}
+.cp-card.done{opacity:.28;}
+
+/* card top */
+.ct{padding:13px 14px 11px;}
+.ct-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.ct-km{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);}
+.ct-temp{font-size:12px;font-weight:700;color:var(--red);background:#fef0ee;padding:2px 8px;border-radius:20px;}
+.ct-name{font-size:18px;font-weight:700;line-height:1.2;}
+.ct-sub{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.4;}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.stat{padding:11px 6px;text-align:center;}
+.stat+.stat{border-left:1px solid var(--border);}
+.stat-val{font-size:17px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;}
+.stat-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:4px;}
+
+/* checklist */
+.checklist{padding:11px 14px;border-bottom:1px solid var(--border);}
+.cl-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:8px;}
+.cl-item{display:flex;align-items:center;gap:10px;padding:7px 0;cursor:pointer;user-select:none;}
+.cl-item:not(:last-child){border-bottom:.5px solid #f2f2f2;}
+.cl-box{
+  width:22px;height:22px;border-radius:6px;border:1.5px solid #d0d0d0;
+  background:#fff;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .12s,border-color .12s;
+}
+.cl-box.on{background:var(--green);border-color:var(--green);}
+.cl-box.on::after{content:'✓';color:#fff;font-size:13px;font-weight:700;}
+.cl-text{font-size:13.5px;color:var(--ink);line-height:1.4;flex:1;}
+.cl-text.done{text-decoration:line-through;color:#c0c0c0;}
+
+/* matrix */
+.matrix{padding:11px 14px;border-bottom:1px solid var(--border);}
+.mx-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:8px;}
+.mx-rows{display:flex;flex-direction:column;gap:5px;}
+.mx-btn{
+  display:flex;align-items:center;gap:0;
+  border-radius:9px;border:1.5px solid var(--border);
+  background:#f8f8f6;cursor:pointer;font-family:inherit;
+  width:100%;text-align:left;overflow:hidden;
+  transition:border-color .15s,background .15s;
+}
+.mx-lbl{
+  width:38px;padding:10px 0;text-align:center;
+  font-size:14px;font-weight:800;flex-shrink:0;
+  border-right:1.5px solid var(--border);
+  background:#f2f2ef;
+}
+.mx-body{flex:1;padding:9px 11px;display:flex;flex-direction:column;gap:2px;}
+.mx-win{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);}
+.mx-pace{font-size:11.5px;color:var(--muted);}
+/* selected states */
+.mx-btn.sel-ap{border-color:#c8891a;background:#fff8ed;}
+.mx-btn.sel-ap .mx-lbl{background:#fff0d0;border-color:#c8891a;color:#9a5800;}
+.mx-btn.sel-a{border-color:#4a9a22;background:#f2faea;}
+.mx-btn.sel-a .mx-lbl{background:#dff5cc;border-color:#4a9a22;color:#2a5a08;}
+.mx-btn.sel-b{border-color:#2573c4;background:#eef4fd;}
+.mx-btn.sel-b .mx-lbl{background:#d0e5fa;border-color:#2573c4;color:#0e4080;}
+.mx-btn.sel-off{border-color:#999;background:#f5f5f3;}
+.mx-btn.sel-off .mx-lbl{background:#eee;border-color:#999;color:#555;}
+/* suggestion */
+.mx-sug{
+  display:none;margin-top:6px;padding:10px 12px;
+  border-radius:9px;font-size:13px;line-height:1.55;
+}
+.mx-sug.show{display:block;}
+.mx-sug b{font-weight:700;}
+.sug-ap{background:#fff8ed;border:1.5px solid #e8c87a;color:#5a3200;}
+.sug-a{background:#f2faea;border:1.5px solid #8dcc55;color:#1a3d08;}
+.sug-b{background:#eef4fd;border:1.5px solid #80b8f0;color:#0a2d5a;}
+.sug-off{background:#f5f5f3;border:1.5px solid #bbb;color:#444;}
+
+/* mark passed button */
+.mark-row{padding:11px 14px;}
+.mark-btn{
+  display:block;width:100%;padding:12px;
+  border-radius:10px;border:1.5px solid var(--border);
+  background:#f8f8f6;color:var(--muted);
+  font-family:inherit;font-size:14px;font-weight:600;
+  cursor:pointer;text-align:center;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.mark-btn:active{transform:scale(.98);}
+.mark-btn.done{background:var(--green);border-color:var(--green);color:#fff;}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div>
-    <div class="eyebrow">Training & Race Intelligence</div>
-    <div class="ht">My <em>Race Hub</em></div>
-  </div>
-  <div class="hstats">
-    <div><div class="hstat-val" id="st-total">1</div><div class="hstat-lbl">Races logged</div></div>
-    <div><div class="hstat-val" id="st-up">1</div><div class="hstat-lbl">Upcoming</div></div>
-    <div><div class="hstat-val" id="st-done">0</div><div class="hstat-lbl">Completed</div></div>
+  <div class="h-eyebrow">5° Trail Anadia · 24 Mai 2026 · 9:20 AM · 21.35 km · +653 m</div>
+  <div class="h-title">Race Day Guide</div>
+  <div class="goal-tabs">
+    <button class="gtab g-ap active" onclick="setGoal('ap')">A+<small>2:15:00</small></button>
+    <button class="gtab g-a" onclick="setGoal('a')">A<small>2:30:00</small></button>
+    <button class="gtab g-b" onclick="setGoal('b')">B<small>2:40:00</small></button>
   </div>
 </div>
 
-<div class="toolbar">
-  <div class="filters">
-    <button class="filter active" onclick="setFilter('all',this)">All</button>
-    <button class="filter" onclick="setFilter('upcoming',this)">Upcoming</button>
-    <button class="filter" onclick="setFilter('completed',this)">Completed</button>
-  </div>
-  <button class="add-btn" onclick="openModal()">+ Add race</button>
-</div>
-
-<div class="grid" id="grid"></div>
-
-<!-- ===== GUIDE OVERLAY ===== -->
-<div class="overlay" id="overlay">
-  <div class="overlay-bar">
-    <div style="overflow:hidden;">
-      <div class="overlay-race" id="ov-title"></div>
-      <div class="overlay-meta" id="ov-meta"></div>
-    </div>
-    <button class="overlay-close" onclick="closeOverlay()">✕ Close</button>
-  </div>
-  <div class="overlay-body" id="ov-body"></div>
-</div>
-
-<!-- ===== ADD RACE MODAL ===== -->
-<div class="modal-bg" id="modal">
-  <div class="modal">
-    <h3>Add a race</h3>
-    <div class="section-divider">Race details</div>
-    <label class="first">Race name</label>
-    <input type="text" id="m-name" placeholder="e.g. Ultra Serra da Estrela">
-    <label>Date</label>
-    <input type="date" id="m-date">
-    <label>Start time (optional)</label>
-    <input type="text" id="m-start" placeholder="e.g. 9:00 AM">
-    <label>Location (optional)</label>
-    <input type="text" id="m-loc" placeholder="e.g. Covilhã, Portugal">
-    <label>Distance (km)</label>
-    <input type="number" id="m-dist" placeholder="21.35" step="0.01">
-    <label>Elevation gain (m)</label>
-    <input type="number" id="m-elev" placeholder="636">
-    <label>Goals (comma-separated)</label>
-    <input type="text" id="m-goals" placeholder="A+ 2:15, A 2:30, B 2:40">
-    <label>Status</label>
-    <select id="m-status"><option value="upcoming">Upcoming</option><option value="completed">Completed</option></select>
-
-    <div class="section-divider">Course profile</div>
-    <label class="first">Elevation profile screenshot</label>
-    <div class="file-zone" id="elev-zone">
-      <input type="file" accept="image/*" onchange="previewFile(this,'elev-preview','elev-zone')">
-      <div class="file-zone-lbl">📈 Upload elevation profile</div>
-      <div class="file-zone-sub">Screenshot from Strava, Caltopo, Garmin, etc.</div>
-      <img class="file-preview" id="elev-preview">
-    </div>
-
-    <div class="section-divider">Weather forecast <span style="font-weight:400;color:#bbb">(optional)</span></div>
-    <label class="first">Weather forecast screenshot</label>
-    <div class="file-zone" id="wx-zone">
-      <input type="file" accept="image/*" onchange="previewFile(this,'wx-preview','wx-zone')">
-      <div class="file-zone-lbl">🌤 Upload weather forecast</div>
-      <div class="file-zone-sub">Screenshot from weather app for race day</div>
-      <img class="file-preview" id="wx-preview">
-    </div>
-    <div class="modal-note">These images will be used to generate your pacing guide automatically. The elevation profile helps determine section difficulty and HR caps; the weather forecast adjusts hydration and HR targets for temperature.</div>
-
-    <div class="modal-btns">
-      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-save" onclick="saveRace()">Save race</button>
-    </div>
-  </div>
-</div>
+<div class="body" id="body"></div>
 
 <script>
-// ===== PACING DATA =====
-const GUIDES = {
-  anadia2026: {
-    weather:[{t:'Start 9:20',v:'17°C'},{t:'KM 5 ~9:52',v:'19°C'},{t:'KM 11 ~10:50',v:'21°C'},{t:'KM 16 ~11:22',v:'23°C'},{t:'Finish ~noon',v:'25°C'}],
-    hydration:'<b>750 ml total:</b> 500 ml main flask (Nrgy Drink pre-loaded) + 250 ml spare (plain water).<br>Drain spare first, done by km 4. Sip Nrgy Drink simultaneously. <b>Refill both flasks at KM 11 only</b> (750 ml plain water). Drink every 10–15 min km 11 → finish. KM 5 cup is worth grabbing if offered without stopping.',
-    infobox:'9:20 AM start → finish at 23–25 °C. Sweat rate ~0.6–0.9 L/hr; 1,500 ml adequate. −1 bpm precaution applied to sections 3 and 4 HR caps. Rain overnight may leave trails damp — watch footing early.',
-    sections:[
-      {km:'KM 5',label:'Aid station 1',dist:'0→5.25 km',elev:'+91 m / −54 m',badge:'b-up',terrain:'Gentle rolling climb',temp:'17–19 °C'},
-      {km:'KM 11',label:'Aid station 2',dist:'5.25→11.36 km',elev:'+301 m / −249 m',badge:'b-mx',terrain:'Rolling climb + descent',temp:'20–21 °C'},
-      {km:'KM 16',label:'Aid station 3',dist:'11.36→16.21 km',elev:'+198 m / −263 m',badge:'b-mx',terrain:'Demanding rolling terrain',temp:'22–23 °C'},
-      {km:'Finish',label:'',dist:'16.21→21.35 km',elev:'+98 m / −124 m',badge:'b-ro',terrain:'Climb then 3km runout',temp:'23–25 °C'},
-    ],
-    goals:{
-      aplus:{label:'A+',time:'2:15:00',pace:'6:19/km',gap:'~5:55/km',color:'#BA7517',effort:'Z2 → Z3-Z4 finish',
-        rows:[
-          {ct:'0:30:30',cp:'avg 5:48/km',sp:'5:35–6:10/km',hr:'Low Z2',bpm:'148–153',cap:'≤ 153 bpm',hrn:'Upper Z2 — if >153 back off',w:'450 ml',c:'63 g',s:'914 mg',refill:false,
-           note:'Spare water done by km 4. Gel 1 at km 3. Trail may be damp — watch footing early. Only ~90 sec faster than A — feel controlled, not driven.'},
-          {ct:'1:22:00',cp:'avg 7:28/km',sp:'7:00–11:00/km',hr:'Z2→Z3 border',bpm:'148–157',cap:'≤ 157 on climbs',hrn:'HR spikes/dips with terrain — expected. Walk grades >10%',w:'300 ml + refill',c:'72 g',s:'1,006 mg',refill:true,
-           note:'NOT a pure climb — 249m descent mixed in. Push runnable descents. Gel 2 at km 8. Finish Nrgy Drink before km 10. REFILL BOTH FLASKS. ≤ 1:22 + HR ≤ 155 = A+ on track.'},
-          {ct:'1:50:00',cp:'avg 6:57/km',sp:'5:00–9:30/km',hr:'Z2→Z3',bpm:'148–160',cap:'≤ 157 on climbs (−1 warm)',hrn:'Push descents 157–160. Walk sharp pitches.',w:'375 ml',c:'22.5 g',s:'—',refill:false,
-           note:'NOT a rest — 198m gain, multiple climbs. Walk sharp pitches; push descents hard. Chew bar at km 13 on a flatter stretch. Arriving ≤ 1:50 = A+ alive.'},
-          {ct:'2:15:00',cp:'avg 6:19/km',sp:'5:30–8:00 → 4:00–5:00/km',hr:'Z3→Z3-Z4',bpm:'157→165–167',cap:'≤ 157 climb · ≤ 167 runout (−1 warm)',hrn:'Manage 55m climb first. Then open up from km 17.5.',w:'375 ml',c:'45 g',s:'730 mg',refill:false,
-           note:'55m climb from KM 16 — manage it (≤ 157). Gel 3 at km 17. Open up fully from km 17.5 on 3km runout. Z3-Z4 from km 18. Leave nothing on the course.'},
-        ]},
-      a:{label:'A',time:'2:30:00',pace:'7:02/km',gap:'~6:30/km',color:'#3B6D11',effort:'Z2 throughout',
-        rows:[
-          {ct:'0:34:00',cp:'avg 6:29/km',sp:'6:10–7:00/km',hr:'Low Z2',bpm:'148–150',cap:'≤ 148 bpm',hrn:'Upper Z1/Z2 border — genuinely easy',w:'450 ml',c:'63 g',s:'914 mg',refill:false,
-           note:'Spare water done by km 4. Gel 1 at km 3. Conversational effort. Cool morning tempts faster — hold back.'},
-          {ct:'1:32:00',cp:'avg 8:24/km',sp:'7:30–11:00/km',hr:'Z2',bpm:'148–156',cap:'≤ 152 on climbs',hrn:'HR varies naturally with terrain — correct. Walk grades >10%.',w:'300 ml + refill',c:'72 g',s:'1,006 mg',refill:true,
-           note:'Mixed terrain — run descents, walk grades >10%. HR cap 152 on climbs. Gel 2 at km 8. Finish Nrgy Drink by km 10. REFILL BOTH FLASKS.'},
-          {ct:'2:04:00',cp:'avg 7:37/km',sp:'5:30–9:30/km',hr:'Z2',bpm:'148–156',cap:'≤ 149 on climbs (−1 warm)',hrn:'Let HR drop after AS2. Recover between climbs.',w:'375 ml',c:'22.5 g',s:'—',refill:false,
-           note:'NOT a recovery window — 198m gain across rolling terrain. Walk all sharp grades. Chew bar at km 13. Drink steadily as temps warm.'},
-          {ct:'2:30:00',cp:'avg 7:02/km',sp:'6:30–9:00 → 4:30–5:30/km',hr:'Z2→low Z3',bpm:'148→155',cap:'≤ 149 climb · ≤ 155 runout (−1 warm)',hrn:'Walk early 55m climb. Build to low Z3 from km 17.5.',w:'375 ml',c:'45 g',s:'730 mg',refill:false,
-           note:'Walk early 55m climb (≤ 149). Gel 3 at km 18. Build low Z3 from km 17.5 runout. Push to 155 from km 19. Strong, confident finish.'},
-        ]},
-      b:{label:'B',time:'2:40:00',pace:'7:29/km',gap:'~6:55/km',color:'#185FA5',effort:'Z1–Z2 focused',
-        rows:[
-          {ct:'0:37:00',cp:'avg 7:03/km',sp:'6:40–7:30/km',hr:'Z1→low Z2',bpm:'≤ 147',cap:'≤ 143 bpm',hrn:'Firmly Z1 — fully conversational',w:'450 ml',c:'63 g',s:'914 mg',refill:false,
-           note:'Spare water done by km 4. Gel 1 at km 3. Everyone feels fast — ignore them. This should feel embarrassingly easy.'},
-          {ct:'1:39:00',cp:'avg 9:01/km',sp:'8:00–12:00/km',hr:'Low Z2',bpm:'148–150',cap:'≤ 148 on climbs',hrn:'Z1/Z2 border throughout. Walk all grades.',w:'300 ml + refill',c:'72 g',s:'1,006 mg',refill:true,
-           note:'Walk ALL grades — no exceptions. Jog descents and flats. Arrive at AS2 genuinely fresh. Gel 2 at km 8. REFILL BOTH FLASKS.'},
-          {ct:'2:15:00',cp:'avg 8:09/km',sp:'6:00–11:00/km',hr:'Z1–low Z2',bpm:'≤ 147',cap:'≤ 143 on climbs (−1 warm)',hrn:'Walk all meaningful grades. Full recovery between climbs.',w:'375 ml',c:'22.5 g',s:'—',refill:false,
-           note:'198m gain — walk ALL meaningful climbs. Do not try to run uphills here. Chew bar at km 13. Drink steadily.'},
-          {ct:'2:40:00',cp:'avg 7:29/km',sp:'7:00–10:00 → 4:45–5:45/km',hr:'Z2',bpm:'148–153',cap:'≤ 143 climb · ≤ 151 runout',hrn:'Walk/hike early 55m climb. Build Z2 from km 17.5.',w:'375 ml',c:'45 g',s:'730 mg',refill:false,
-           note:'Walk/hike early 55m climb (≤ 143). Gel 3 at km 18. Build Z2 from km 17.5. Steady, controlled finish. A well-managed B race is a successful race.'},
-        ]},
-    },
-    rvGoals:{
-      aplus:{label:'A+',time:'2:15',color:'#BA7517',cps:[
-        {km:'KM 5',name:'Aid station 1',time:'≤ 30:30',hr:'≤ 153',hrc:'#c0392b',temp:'17–19 °C',note:'<b>Spare water done by km 4</b> · Gel 1 at km 3 · Grab cup if offered · Trail may be damp early'},
-        {km:'KM 11',name:'Aid station 2',time:'≤ 1:22',hr:'≤ 157',hrc:'#c0392b',temp:'20–21 °C',note:'<b>REFILL BOTH FLASKS</b> · Gel 2 done · Walk grades >10% · Push descents · ≤1:22 + HR ≤155 = A+ on track'},
-        {km:'KM 16',name:'Aid station 3',time:'≤ 1:50',hr:'≤ 157',hrc:'#BA7517',temp:'22–23 °C',note:'<b>NOT a rest — 198m gain</b> · Walk pitches · Push descents 157–160 · Chew bar km 13'},
-        {km:'Finish',name:'',time:'2:15',hr:'≤ 167',hrc:'#7A1E00',temp:'23–25 °C',note:'<b>55m climb first (≤157)</b> · Gel 3 at km 17 · Open up from km 17.5 · Z3-Z4 from km 18 · Leave nothing'},
-      ]},
-      a:{label:'A',time:'2:30',color:'#3B6D11',cps:[
-        {km:'KM 5',name:'Aid station 1',time:'≤ 34:00',hr:'≤ 148',hrc:'#3B6D11',temp:'17–19 °C',note:'<b>Spare water done by km 4</b> · Gel 1 at km 3 · Conversational effort · Trail may be damp'},
-        {km:'KM 11',name:'Aid station 2',time:'≤ 1:32',hr:'≤ 152',hrc:'#BA7517',temp:'20–21 °C',note:'<b>REFILL BOTH FLASKS</b> · Gel 2 done · Walk grades >10% · HR varies — expected'},
-        {km:'KM 16',name:'Aid station 3',time:'≤ 2:04',hr:'≤ 149',hrc:'#3B6D11',temp:'22–23 °C',note:'<b>Rolling terrain — 198m gain, not a rest</b> · Walk all sharp grades · Chew bar km 13'},
-        {km:'Finish',name:'',time:'2:30',hr:'≤ 155',hrc:'#BA7517',temp:'23–25 °C',note:'<b>Walk early 55m climb (≤149)</b> · Gel 3 at km 18 · Build low Z3 from km 17.5 · Push to 155 from km 19'},
-      ]},
-      b:{label:'B',time:'2:40',color:'#185FA5',cps:[
-        {km:'KM 5',name:'Aid station 1',time:'≤ 37:00',hr:'≤ 143',hrc:'#185FA5',temp:'17–19 °C',note:'<b>Spare water done by km 4</b> · Gel 1 at km 3 · Fully conversational — ignore everyone'},
-        {km:'KM 11',name:'Aid station 2',time:'≤ 1:39',hr:'≤ 148',hrc:'#3B6D11',temp:'20–21 °C',note:'<b>REFILL BOTH FLASKS</b> · Gel 2 done · Walk ALL grades · Arrive genuinely fresh'},
-        {km:'KM 16',name:'Aid station 3',time:'≤ 2:15',hr:'≤ 143',hrc:'#185FA5',temp:'22–23 °C',note:'<b>198m gain — walk ALL meaningful climbs</b> · Do not run uphills here · Chew bar km 13'},
-        {km:'Finish',name:'',time:'2:40',hr:'≤ 151',hrc:'#3B6D11',temp:'23–25 °C',note:'<b>Walk/hike early 55m climb (≤143)</b> · Gel 3 at km 18 · Build Z2 from km 17.5 · Controlled finish'},
-      ]},
-    }
+/* ─── GOAL DATA ─────────────────────────────────────────────────────── */
+var G = {
+  ap:{
+    label:'A+',finish:'2:15:00',color:'#B87317',
+    cps:[
+      {time:'0:34:00',pace:'5:58/km',hr:'≤ 152',hrCol:'#e67e22'},
+      {time:'1:25:00',pace:'7:39/km',hr:'≤ 149 climbs',hrCol:'#e74c3c'},
+      {time:'1:53:00',pace:'6:58/km',hr:'≤ 149 climbs',hrCol:'#e74c3c'},
+      {time:'2:15:00',pace:'6:19/km',hr:'≤ 149→160',hrCol:'#c0392b'}
+    ]
+  },
+  a:{
+    label:'A',finish:'2:30:00',color:'#2d6a0a',
+    cps:[
+      {time:'0:37:00',pace:'6:29/km',hr:'≤ 147',hrCol:'#27ae60'},
+      {time:'1:33:00',pace:'8:22/km',hr:'≤ 143 climbs',hrCol:'#e67e22'},
+      {time:'2:04:00',pace:'7:39/km',hr:'≤ 143 climbs',hrCol:'#e67e22'},
+      {time:'2:30:00',pace:'7:02/km',hr:'≤ 143→149',hrCol:'#e67e22'}
+    ]
+  },
+  b:{
+    label:'B',finish:'2:40:00',color:'#185FA5',
+    cps:[
+      {time:'0:41:00',pace:'7:11/km',hr:'≤ 135',hrCol:'#2980b9'},
+      {time:'1:45:00',pace:'9:27/km',hr:'≤ 132 all',hrCol:'#2980b9'},
+      {time:'2:18:00',pace:'8:31/km',hr:'≤ 132 climbs',hrCol:'#2980b9'},
+      {time:'2:40:00',pace:'7:29/km',hr:'≤ 132→143',hrCol:'#e67e22'}
+    ]
   }
 };
 
-// ===== RACES =====
-let races=[{
-  id:'anadia2026',name:'5° Trail Anadia Capital do Espumante',date:'2026-05-24',startTime:'9:20 AM',
-  dist:'21.35',elev:'+636',status:'upcoming',location:'Anadia, Portugal',
-  goals:[{k:'aplus',l:'A+',t:'2:15',c:'#BA7517'},{k:'a',l:'A',t:'2:30',c:'#3B6D11'},{k:'b',l:'B',t:'2:40',c:'#185FA5'}],
-  hasGuide:true,guideKey:'anadia2026'
-}];
+/* ─── CHECKPOINT DEFINITIONS ────────────────────────────────────────── */
+var CPS = [
+  {
+    id:'as1',km:'5.7 km',name:'Aid Station 1',temp:'25 °C',
+    sub:'+71 m / −33 m · Gentle rolling climb',
+    isFinish:false,
+    actions:[
+      'Consumed one gel (30 min mark).',
+      'Spare flask — consumed.',
+      'Main flask — approx. half consumed.',
+      'Foldable cup — 200 ml.',
+      'Refill spare flask if not crowded.'
+    ],
+    matrix:[
+      {g:'ap',l:'A+',c:'#B87317',win:'≤ 0:34',pace:'≤ 5:58/km',css:'ap',
+       sug:'<b>On A+ pace ✓</b> Section 2 is mixed terrain — push runnable descents ≤157 bpm, walk climbs ≤149 bpm. Main climb around km 8–9. Nrgy Drink done by km 10. Target AS2 by <b>1:25</b>.'},
+      {g:'a',l:'A',c:'#2d6a0a',win:'0:34–0:37',pace:'5:59–6:29',css:'a',
+       sug:'<b>On A pace ✓</b> Walk climbs ≤143 bpm, run all descents. Nrgy Drink done by km 10. Target AS2 by <b>1:33</b>.'},
+      {g:'b',l:'B',c:'#185FA5',win:'0:37–0:41',pace:'6:30–7:11',css:'b',
+       sug:'<b>On B pace ✓</b> Walk all grades ≤132 bpm. Jog descents and flats only. Nrgy Drink done by km 10. Target AS2 by <b>1:45</b>.'},
+      {g:'off',l:'?',c:'#888',win:'> 0:41',pace:'> 7:11',css:'off',
+       sug:'<b>Behind pace.</b> Hot day — don\'t chase it. Walk all climbs, HR ≤125 bpm. Arrive at AS2 as fresh as possible.'}
+    ]
+  },
+  {
+    id:'as2',km:'11.1 km',name:'Aid Station 2 ★',temp:'28 °C',
+    sub:'+295 m / −232 m · Rolling climb + descent',
+    isFinish:false,
+    actions:[
+      'Consumed one gel (60 min mark).',
+      'Nrgy Drink — fully consumed.',
+      'Refill both flasks (500 ml + 250 ml).',
+      'Foldable cup — 200 ml.',
+      'Wet towel or ice, if needed.'
+    ],
+    matrix:[
+      {g:'ap',l:'A+',c:'#B87317',win:'≤ 1:25',pace:'≤ 7:39/km',css:'ap',
+       sug:'<b>A+ is alive ✓</b> Section 3 is rolling with net descent (+201/−281 m). Push descents ≤157 bpm, walk pitches ≤149 bpm. Sip water every 10 min. Gel 3 at 1:30. Target AS3 by <b>1:53</b>.'},
+      {g:'a',l:'A',c:'#2d6a0a',win:'1:25–1:33',pace:'7:40–8:22',css:'a',
+       sug:'<b>On A track ✓</b> Walk sharp grades ≤143 bpm, run descents. Sip every 10 min. Gel 3 at 1:30. Target AS3 by <b>2:04</b>.'},
+      {g:'b',l:'B',c:'#185FA5',win:'1:33–1:45',pace:'8:23–9:27',css:'b',
+       sug:'<b>On B track ✓</b> Walk all climbs ≤132 bpm. Jog descents. Sip every 10 min. Gel 3 at 1:30. Target AS3 by <b>2:18</b>.'},
+      {g:'off',l:'?',c:'#888',win:'> 1:45',pace:'> 9:27',css:'off',
+       sug:'<b>Behind pace.</b> Walk everything. Sip water every 10 min. Focus on reaching AS3 with energy for the final runout.'}
+    ]
+  },
+  {
+    id:'as3',km:'16.2 km',name:'Aid Station 3',temp:'29 °C',
+    sub:'+201 m / −281 m · Rolling terrain, net descent',
+    isFinish:false,
+    actions:[
+      'Consumed one gel (90 min mark).',
+      'Foldable cup — 200 ml.',
+      'Refill spare flask if possible.',
+      'Wet towel or ice, if needed.'
+    ],
+    matrix:[
+      {g:'ap',l:'A+',c:'#B87317',win:'≤ 1:53',pace:'≤ 6:58/km',css:'ap',
+       sug:'<b>A+ secured ✓</b> Manage 55 m climb first ≤149 bpm. Gel 4 at 2:00. From ~km 17.5 push hard on 3 km runout — up to 160 bpm from km 19. Empty both flasks.'},
+      {g:'a',l:'A',c:'#2d6a0a',win:'1:53–2:04',pace:'6:59–7:39',css:'a',
+       sug:'<b>On A track ✓</b> Manage 55 m climb ≤143 bpm. Gel 4 at 2:00. Build to ≤149 bpm on the 3 km runout. Drink everything left.'},
+      {g:'b',l:'B',c:'#185FA5',win:'2:04–2:18',pace:'7:40–8:31',css:'b',
+       sug:'<b>On B track ✓</b> Walk 55 m climb ≤132 bpm. Gel 4 at 2:00. Build to ≤143 bpm on the 3 km runout. Empty both flasks.'},
+      {g:'off',l:'?',c:'#888',win:'> 2:18',pace:'> 8:31',css:'off',
+       sug:'<b>Behind pace.</b> Walk the climb then run the full 3 km runout — no HR limit from km 17.5. Give everything left.'}
+    ]
+  },
+  {
+    id:'fin',km:'21.35 km',name:'Finish 🏁',temp:'30 °C',
+    sub:'+86 m / −118 m · 55 m climb, then 3 km descending runout',
+    isFinish:true,
+    actions:[
+      'Consumed one gel (120 min mark).',
+      'Both flasks — fully consumed.'
+    ],
+    matrix:null
+  }
+];
 
-let currentFilter='all';
-let currentOvGoal='aplus';
-let currentOvMode='full';
+/* ─── STATE ─────────────────────────────────────────────────────────── */
+var curGoal = 'ap';
+var cbState = {};   // key: "cpid-idx" → bool
+var mxSel   = {};   // key: cpid       → goal string
+var cpDone  = [false,false,false,false];
 
-// ===== RENDER GRID =====
-function renderGrid(){
-  const f=races.filter(r=>currentFilter==='all'||r.status===currentFilter);
-  document.getElementById('grid').innerHTML=f.map(renderCard).join('')+renderPlaceholder();
-  document.getElementById('st-total').textContent=races.length;
-  document.getElementById('st-up').textContent=races.filter(r=>r.status==='upcoming').length;
-  document.getElementById('st-done').textContent=races.filter(r=>r.status==='completed').length;
+/* ─── RENDER ────────────────────────────────────────────────────────── */
+function render(){
+  var html = '';
+  for(var i=0;i<CPS.length;i++) html += buildCard(CPS[i], i);
+  document.getElementById('body').innerHTML = html;
 }
 
-function renderCard(r){
-  const d=new Date(r.date+'T12:00:00');
-  const ds=d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-  const goals=r.goals.map(g=>`<span class="gpill gp-${g.k==='aplus'?'ap':g.k}">${g.l} <span style="font-family:'DM Mono',monospace;font-size:10px">${g.t}</span></span>`).join('');
-  return `<div class="card" onclick="openOverlay('${r.id}')">
-    <div class="card-header">
-      <div class="card-status ${r.status==='upcoming'?'st-up':'st-done'}"><span class="st-dot"></span>${r.status==='upcoming'?'Upcoming':'Completed'}</div>
-      <div class="card-name">${r.name}</div>
-      <div class="card-date">${ds}${r.startTime?' · '+r.startTime:''}${r.location?' · '+r.location:''}</div>
-    </div>
-    <div class="card-meta">
-      <div><div class="cm-val">${r.dist} km</div><div class="cm-lbl">Distance</div></div>
-      <div><div class="cm-val">${r.elev} m</div><div class="cm-lbl">Elevation gain</div></div>
-    </div>
-    <div class="card-goals">${goals}</div>
-    <div class="card-cta">↗ Click to open pacing guide</div>
-  </div>`;
+function buildCard(cp, idx){
+  var g   = G[curGoal];
+  var cpd = g.cps[idx];
+  var dnC = cpDone[idx] ? ' done' : '';
+
+  /* stats */
+  var stats =
+    '<div class="stats">' +
+      stat(cpd.time, 'Target time', g.color) +
+      stat(cpd.hr + ' bpm', 'HR cap', cpd.hrCol) +
+      stat(cpd.pace, 'Avg pace', '#555', '15px') +
+    '</div>';
+
+  /* checklist */
+  var cl = '<div class="checklist"><div class="cl-hdr">'+(cp.isFinish?'Recap':'Checklist')+'</div>';
+  for(var j=0;j<cp.actions.length;j++){
+    var k   = cp.id+'-'+j;
+    var on  = cbState[k];
+    cl += '<div class="cl-item" onclick="toggleCB(\''+cp.id+'\','+j+')">' +
+            '<div class="cl-box'+(on?' on':'')+'"></div>' +
+            '<div class="cl-text'+(on?' done':'\'')+'">'+cp.actions[j]+'</div>' +  // bug fix below
+          '</div>';
+  }
+  cl += '</div>';
+
+  /* matrix */
+  var mx = '';
+  if(cp.matrix){
+    mx = '<div class="matrix"><div class="mx-hdr">Where are you?</div><div class="mx-rows">';
+    for(var k2=0;k2<cp.matrix.length;k2++){
+      var mr  = cp.matrix[k2];
+      var sel = (mxSel[cp.id]===mr.g);
+      mx += '<button class="mx-btn'+(sel?' sel-'+mr.css:'')+'" onclick="pickMx(\''+cp.id+'\',\''+mr.g+'\')">' +
+              '<div class="mx-lbl" style="color:'+mr.c+'">'+mr.l+'</div>' +
+              '<div class="mx-body"><div class="mx-win">'+mr.win+'</div><div class="mx-pace">'+mr.pace+'</div></div>' +
+            '</button>' +
+            '<div class="mx-sug sug-'+mr.css+(sel?' show':'')+'" id="sug-'+cp.id+'-'+mr.g+'">'+mr.sug+'</div>';
+    }
+    mx += '</div></div>';
+  } else if(cp.isFinish){
+    mx = '<div class="matrix" style="text-align:center;padding:14px 14px 8px;font-size:14px;color:var(--muted)">You made it. Everything on the course. 🏁</div>';
+  }
+
+  /* mark button */
+  var mkLabel = cp.isFinish ? (cpDone[idx]?'🏁 Done!':'Mark as finished') : (cpDone[idx]?'✓ Passed':'Mark as passed');
+  var mark = '<div class="mark-row"><button class="mark-btn'+(cpDone[idx]?' done':'')+'" onclick="markCP('+idx+')">'+ mkLabel +'</button></div>';
+
+  return '<div class="cp-card'+dnC+'" id="card-'+idx+'">' +
+    '<div class="ct">' +
+      '<div class="ct-top"><span class="ct-km">'+cp.km+'</span><span class="ct-temp">🌡 '+cp.temp+'</span></div>' +
+      '<div class="ct-name">'+cp.name+'</div>' +
+      '<div class="ct-sub">'+cp.sub+'</div>' +
+    '</div>' +
+    stats + cl + mx + mark +
+  '</div>';
 }
 
-function renderPlaceholder(){
-  return `<div class="card-placeholder" onclick="openModal()">
-    <div class="ph-icon">+</div>
-    <div class="ph-text">Add your next race</div>
-    <div class="ph-sub">Upload elevation profile &amp; weather for AI-generated pacing plan</div>
-  </div>`;
+function stat(val, lbl, col, fz){
+  return '<div class="stat"><div class="stat-val" style="color:'+col+';'+(fz?'font-size:'+fz:'')+'">'+val+'</div><div class="stat-lbl">'+lbl+'</div></div>';
 }
 
-function setFilter(f,btn){
-  currentFilter=f;
-  document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderGrid();
+/* ─── INTERACTIONS ──────────────────────────────────────────────────── */
+function setGoal(g){
+  curGoal = g;
+  document.querySelectorAll('.gtab').forEach(function(b){ b.classList.remove('active'); });
+  var el = document.querySelector('.g-'+g);
+  if(el) el.classList.add('active');
+  render();
 }
 
-// ===== OVERLAY =====
-function openOverlay(id){
-  const r=races.find(r=>r.id===id);
-  if(!r) return;
-  const d=new Date(r.date+'T12:00:00');
-  document.getElementById('ov-title').textContent=r.name;
-  document.getElementById('ov-meta').textContent=d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+(r.startTime?' · Start '+r.startTime:'')+(r.location?' · '+r.location:'');
-  document.getElementById('ov-body').innerHTML = r.hasGuide ? buildGuide(r) : `<div style="padding:2rem;color:#888;font-size:14px;">No pacing guide yet for this race.</div>`;
-  document.getElementById('overlay').classList.add('open');
-  document.body.style.overflow='hidden';
-  if(r.hasGuide) initGuide(r.guideKey,'aplus','full');
+function toggleCB(cpId, j){
+  var k = cpId+'-'+j;
+  cbState[k] = !cbState[k];
+  /* re-render just this card efficiently by full render — state preserved */
+  render();
 }
 
-function closeOverlay(){
-  document.getElementById('overlay').classList.remove('open');
-  document.body.style.overflow='';
+function pickMx(cpId, gKey){
+  mxSel[cpId] = (mxSel[cpId]===gKey) ? null : gKey;
+  render();
+  if(mxSel[cpId]){
+    setTimeout(function(){
+      var el = document.getElementById('sug-'+cpId+'-'+mxSel[cpId]);
+      if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }, 60);
+  }
 }
 
-function buildGuide(r){
-  const g=GUIDES[r.guideKey];
-  return `
-  <div class="zlegend">
-    <span class="zp zp1"><span class="zp-lbl">Z1</span> 0–147</span>
-    <span class="zp zp2"><span class="zp-lbl">Z2</span> 148–156</span>
-    <span class="zp zp3"><span class="zp-lbl">Z3</span> 157–165</span>
-    <span class="zp zp4"><span class="zp-lbl">Z4</span> 166–174 bpm</span>
-    <span class="znote">✓ No heat derating · −1 bpm precaution sections 3 &amp; 4</span>
-  </div>
-  <div class="w-strip">${g.weather.map(w=>`<div class="w-cell"><div class="w-lbl">${w.t}</div><b>${w.v}</b></div>`).join('')}</div>
-  <div class="hbox"><div class="hbox-title">▲ Hydration — stopping only at KM 11</div>${g.hydration}<div class="ibox">✓ ${g.infobox}</div></div>
-  <div class="o-mode">
-    <button class="o-mode-btn active" id="mb-full-${r.guideKey}" onclick="switchOvMode('${r.guideKey}','full',this)">Full plan</button>
-    <button class="o-mode-btn" id="mb-rv-${r.guideKey}" onclick="switchOvMode('${r.guideKey}','rv',this)">📋 Race-day view</button>
-  </div>
-  <div id="full-${r.guideKey}">
-    <div class="o-tabs" id="tabs-${r.guideKey}">
-      <button class="o-tab active" data-gk="aplus" onclick="switchOvGoal('${r.guideKey}','aplus',this)"><span class="o-dot" style="background:#BA7517"></span>A+ · 2:15</button>
-      <button class="o-tab" data-gk="a" onclick="switchOvGoal('${r.guideKey}','a',this)"><span class="o-dot" style="background:#3B6D11"></span>A · 2:30</button>
-      <button class="o-tab" data-gk="b" onclick="switchOvGoal('${r.guideKey}','b',this)"><span class="o-dot" style="background:#185FA5"></span>B · 2:40</button>
-    </div>
-    <div id="goal-panels-${r.guideKey}"></div>
-  </div>
-  <div id="rv-${r.guideKey}" style="display:none;">
-    <div class="rv-wrap">
-      <div class="o-tabs" id="rv-tabs-${r.guideKey}">
-        <button class="o-tab active" onclick="switchRv('${r.guideKey}','aplus',this)"><span class="o-dot" style="background:#BA7517"></span>A+ · 2:15</button>
-        <button class="o-tab" onclick="switchRv('${r.guideKey}','a',this)"><span class="o-dot" style="background:#3B6D11"></span>A · 2:30</button>
-        <button class="o-tab" onclick="switchRv('${r.guideKey}','b',this)"><span class="o-dot" style="background:#185FA5"></span>B · 2:40</button>
-      </div>
-      <div id="rv-content-${r.guideKey}"></div>
-    </div>
-  </div>`;
+function markCP(idx){
+  cpDone[idx] = !cpDone[idx];
+  render();
+  if(cpDone[idx]){
+    var next = document.getElementById('card-'+(idx+1));
+    if(next) setTimeout(function(){ next.scrollIntoView({behavior:'smooth',block:'start'}); }, 80);
+  }
 }
 
-function initGuide(gk, goalKey, mode){
-  renderGoalPanel(gk, goalKey);
-  renderRv(gk,'aplus');
-}
-
-function switchOvMode(gk, mode, btn){
-  document.querySelectorAll(`#mb-full-${gk},#mb-rv-${gk}`).forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(`full-${gk}`).style.display = mode==='full'?'block':'none';
-  document.getElementById(`rv-${gk}`).style.display = mode==='rv'?'block':'none';
-}
-
-function switchOvGoal(gk, goalKey, btn){
-  document.querySelectorAll(`#tabs-${gk} .o-tab`).forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderGoalPanel(gk, goalKey);
-}
-
-function switchRv(gk, goalKey, btn){
-  document.querySelectorAll(`#rv-tabs-${gk} .o-tab`).forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderRv(gk, goalKey);
-}
-
-function renderGoalPanel(gk, goalKey){
-  const g=GUIDES[gk].goals[goalKey];
-  const s=GUIDES[gk].sections;
-  const container=document.getElementById(`goal-panels-${gk}`);
-  const summary=`<div class="o-summary">
-    <div class="os-card"><div class="os-lbl">Target finish</div><div class="os-val" style="color:${g.color}">${g.time}</div></div>
-    <div class="os-card"><div class="os-lbl">Avg actual pace</div><div class="os-val">${g.pace}</div></div>
-    <div class="os-card"><div class="os-lbl">Target GAP</div><div class="os-val">${g.gap}</div></div>
-    <div class="os-card"><div class="os-lbl">Effort</div><div class="os-val" style="font-size:13px;margin-top:2px">${g.effort}</div></div>
-  </div>`;
-  const rows=s.map((sec,i)=>{
-    const row=g.rows[i];
-    const isFinish=i===3;
-    const refillBadge=row.refill?'<span class="rfb">⟳ REFILL BOTH FLASKS</span>':'';
-    return `<tr>
-      <td><span class="cp-n">${sec.km}${sec.label?' — '+sec.label:''}</span><span class="badge ${sec.badge}">${sec.terrain}</span><div class="em">${sec.elev} · ${sec.dist}</div><div class="tmeta">${sec.temp}</div></td>
-      <td><span class="ct" style="color:${isFinish?g.color:'inherit'}">${row.ct}</span><span class="cp">${row.cp}</span></td>
-      <td style="font-size:11.5px">${row.sp}</td>
-      <td><span class="hr-z z2c">${row.hr}</span><span class="hr-b" style="color:${g.color}">${row.bpm}</span><span class="hr-s">${row.cap}<br>${row.hrn}</span></td>
-      <td><span class="ni"><span class="q">${row.w}</span></span></td>
-      <td><span class="ni"><span class="q">${row.c}</span></span></td>
-      <td><span class="ni"><span class="q">${row.s}</span></span>${refillBadge}</td>
-    </tr>
-    <tr class="nr"><td colspan="7">→ ${row.note}</td></tr>`;
-  }).join('');
-  container.innerHTML=summary+`<div class="tbl-wrap"><table>
-    <thead><tr>
-      <th style="min-width:140px">Checkpoint</th><th>Cum. time</th><th>Section pace</th>
-      <th style="min-width:130px">HR zone</th><th>Water</th><th>Carbs</th><th>Sodium &amp; refill</th>
-    </tr></thead><tbody>${rows}</tbody></table></div>
-    <div class="tot">
-      <span class="ti"><b>Total water:</b> 1,500 ml</span>
-      <span class="ti"><b>Total carbs:</b> 202.5 g (3 gels + drink + bar)</span>
-      <span class="ti"><b>Total sodium:</b> 2,650 mg</span>
-    </div>`;
-}
-
-function renderRv(gk, goalKey){
-  const g=GUIDES[gk].rvGoals[goalKey];
-  const weather=GUIDES[gk].weather;
-  const tempBar=`<div class="rv-temp-bar">${weather.map(w=>`<div class="rv-tc"><div class="rv-tt">${w.t}</div><div class="rv-tp">${w.v}</div></div>`).join('')}</div>`;
-  const nutr=`<div class="rv-nutr"><b>Nutrition:</b> 250ml spare water → done by km 4 · 500ml Nrgy Drink → done by km 10 · Gel 1 @ km 3 · Gel 2 @ km 8 · Chew bar @ km 13 · Gel 3 @ km ${goalKey==='aplus'?'17':'18'} · <b>Refill both flasks at KM 11 only</b></div>`;
-  const cards=g.cps.map((cp,i)=>`
-    <div class="rv-cp" id="rv-cp-${gk}-${goalKey}-${i}">
-      <div class="rv-top">
-        <div><div class="rv-km">${cp.km}</div><div class="rv-name">${cp.name||'Finish line'}</div><div class="rv-tmp">${cp.temp}</div></div>
-        <div class="rv-stat"><div class="rv-val" style="color:${g.color}">${cp.time}</div><div class="rv-lbl">Target time</div></div>
-        <div class="rv-stat"><div class="rv-val" style="color:${cp.hrc}">${cp.hr}</div><div class="rv-lbl">HR cap (bpm)</div></div>
-      </div>
-      <div class="rv-note">${cp.note}</div>
-      <div class="rv-act"><button class="mk" id="mk-${gk}-${goalKey}-${i}" onclick="rvMark('${gk}','${goalKey}',${i})">✓ Mark passed</button></div>
-    </div>`).join('');
-  document.getElementById(`rv-content-${gk}`).innerHTML=tempBar+nutr+cards;
-}
-
-function rvMark(gk,gKey,idx){
-  const card=document.getElementById(`rv-cp-${gk}-${gKey}-${idx}`);
-  const btn=document.getElementById(`mk-${gk}-${gKey}-${idx}`);
-  const done=card.classList.contains('rv-done');
-  card.classList.toggle('rv-done',!done);
-  btn.classList.toggle('marked',!done);
-  btn.textContent=done?'✓ Mark passed':'✓ Passed';
-  const next=document.getElementById(`rv-cp-${gk}-${gKey}-${idx+1}`);
-  if(next&&!done){next.classList.add('rv-cur');next.scrollIntoView({behavior:'smooth',block:'nearest'});}
-  if(next&&done) next.classList.remove('rv-cur');
-}
-
-// ===== MODAL =====
-function openModal(){document.getElementById('modal').classList.add('open');}
-function closeModal(){document.getElementById('modal').classList.remove('open');}
-
-function previewFile(input, previewId, zoneId){
-  const file=input.files[0];
-  if(!file) return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const img=document.getElementById(previewId);
-    img.src=e.target.result;
-    img.style.display='block';
-    document.getElementById(zoneId).querySelector('.file-zone-lbl').textContent='✓ Image loaded';
-  };
-  reader.readAsDataURL(file);
-}
-
-function saveRace(){
-  const name=document.getElementById('m-name').value.trim();
-  const date=document.getElementById('m-date').value;
-  if(!name||!date){alert('Race name and date are required.');return;}
-  const dist=document.getElementById('m-dist').value;
-  const elev=document.getElementById('m-elev').value;
-  const status=document.getElementById('m-status').value;
-  const startTime=document.getElementById('m-start').value;
-  const loc=document.getElementById('m-loc').value;
-  const goalsRaw=document.getElementById('m-goals').value;
-  const goals=goalsRaw.split(',').map(g=>{
-    const t=g.trim();
-    const parts=t.split(/\s+/);
-    const lbl=parts[0]||'A';
-    const time=parts[1]||'—';
-    const k=lbl.toLowerCase().replace('+','plus');
-    const clr=lbl.includes('+')?'#BA7517':lbl==='A'?'#3B6D11':lbl==='B'?'#185FA5':'#888';
-    return {k,l:lbl,t:time,c:clr};
-  }).filter(g=>g.l);
-  races.push({id:'race-'+Date.now(),name,date,startTime,location:loc,dist,elev:'+'+elev,status,goals,hasGuide:false});
-  closeModal();
-  renderGrid();
-  // Reset modal
-  ['m-name','m-date','m-start','m-loc','m-dist','m-elev','m-goals'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('elev-preview').style.display='none';
-  document.getElementById('wx-preview').style.display='none';
-  document.querySelector('#elev-zone .file-zone-lbl').textContent='📈 Upload elevation profile';
-  document.querySelector('#wx-zone .file-zone-lbl').textContent='🌤 Upload weather forecast';
-}
-
-document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeOverlay();}});
-
-renderGrid();
+/* ─── INIT ──────────────────────────────────────────────────────────── */
+render();
 </script>
 </body>
 </html>
